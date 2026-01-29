@@ -3,6 +3,7 @@
 A complete, self-hosted Matrix Synapse server solution with built-in Admin Dashboard.  
 Designed for easy deployment in both **Online** and **Offline (Air-gapped)** environments.
 
+[FA **فارسی**](./release/README_FA.md) | [📦 **UPGRADE / راهنمای آپدیت**](./release/UPGRADE.md)
 ---
 
 ## 📂 Project Structure
