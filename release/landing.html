@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Element X Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0dbd8b;
+            --primary-dark: #09a378;
+            --bg: #111827;
+            --card-bg: rgba(31, 41, 55, 0.7);
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --error: #ef4444;
+        }
+
+        [lang="fa"] {
+            font-family: 'Vazirmatn', sans-serif;
+            direction: rtl;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(13, 189, 139, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        [lang="fa"] .lang-switch {
+            right: auto;
+            left: 20px;
+        }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 99px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        [lang="fa"] .input-group {
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-dim);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .apps {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .apps h3 {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .app-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .app-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .app-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .status-msg {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+
+        .error { color: var(--error); }
+        .success { color: var(--primary); }
+
+        .hidden { display: none; }
+
+        /* Loader */
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body id="body">
+    <div class="lang-switch">
+        <button class="ghost" onclick="toggleLang()" id="btn-lang">فارسی</button>
+    </div>
+
+    <div class="container">
+        <h1 id="title">Join Element X</h1>
+        <p class="subtitle" id="subtitle">Create your instance account</p>
+
+        <div id="reg-form">
+            <div class="input-group">
+                <label id="lbl-user">Username</label>
+                <input type="text" id="username" placeholder="e.g. ali">
+            </div>
+            <div class="input-group">
+                <label id="lbl-pass">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <div class="input-group">
+                <label id="lbl-confirm">Confirm Password</label>
+                <input type="password" id="confirm" placeholder="••••••••">
+            </div>
+
+            <button class="submit-btn" onclick="register()" id="btn-submit">Register</button>
+            <div id="status" class="status-msg"></div>
+        </div>
+
+        <div id="reg-disabled" class="hidden">
+            <p style="color: var(--error);" id="msg-disabled">Public registration is currently disabled.</p>
+        </div>
+
+        <div id="success-view" class="hidden">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+            <h2 id="success-title">Account Created!</h2>
+            <p id="success-msg">You can now sign in to Element with your credentials.</p>
+            <button class="submit-btn" onclick="window.location.reload()" id="btn-back">Create Another</button>
+        </div>
+
+        <div class="apps">
+            <h3 id="app-title">Download App</h3>
+            <div class="app-links">
+                <a href="https://play.google.com/store/apps/details?id=io.element.android.x" class="app-link" target="_blank">
+                    <span>Android (X)</span>
+                </a>
+                <a href="https://apps.apple.com/app/element-x/id6447817174" class="app-link" target="_blank">
+                    <span>iOS (X)</span>
+                </a>
+                <a href="https://element.io/download" class="app-link" target="_blank">
+                    <span>Desktop</span>
+                </a>
+                <a href="https://app.element.io" class="app-link" target="_blank">
+                    <span>Web App</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "Join Element X",
+                subtitle: "Create your instance account",
+                lbl_user: "Username",
+                lbl_pass: "Password",
+                lbl_confirm: "Confirm Password",
+                btn_submit: "Register",
+                btn_lang: "فارسی",
+                app_title: "Download App",
+                success_title: "Account Created!",
+                success_msg: "You can now sign in to Element with your credentials.",
+                btn_back: "Create Another",
+                msg_disabled: "Public registration is currently disabled.",
+                err_mismatch: "Passwords do not match",
+                err_generic: "Registration failed. Check if username is taken.",
+                err_short: "Password must be at least 8 characters",
+                loading: "Registering..."
+            },
+            fa: {
+                title: "عضویت در المنت",
+                subtitle: "ساخت حساب کاربری جدید",
+                lbl_user: "نام کاربری",
+                lbl_pass: "رمز عبور",
+                lbl_confirm: "تایید رمز عبور",
+                btn_submit: "ثبت‌نام",
+                btn_lang: "English",
+                app_title: "دریافت اپلیکیشن",
+                success_title: "حساب ساخته شد!",
+                success_msg: "اکنون می‌توانید با حساب خود وارد اپلیکیشن شوید.",
+                btn_back: "ساخت حساب دیگر",
+                msg_disabled: "ثبت‌نام عمومی در حال حاضر غیرفعال است.",
+                err_mismatch: "رمزهای عبور همخوانی ندارند",
+                err_generic: "خطا در ثبت‌نام. نام کاربری احتمالا تکراری است.",
+                err_short: "رمز عبور باید حداقل ۸ کاراکتر باشد",
+                loading: "در حال ثبت‌نام..."
+            }
+        };
+
+        let currentLang = 'en';
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'fa' : 'en';
+            const t = translations[currentLang];
+            document.getElementById('body').lang = currentLang;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('subtitle').innerText = t.subtitle;
+            document.getElementById('lbl-user').innerText = t.lbl_user;
+            document.getElementById('lbl-pass').innerText = t.lbl_pass;
+            document.getElementById('lbl-confirm').innerText = t.lbl_confirm;
+            document.getElementById('btn-submit').innerText = t.btn_submit;
+            document.getElementById('btn-lang').innerText = t.btn_lang;
+            document.getElementById('app-title').innerText = t.app_title;
+            document.getElementById('success-title').innerText = t.success_title;
+            document.getElementById('success-msg').innerText = t.success_msg;
+            document.getElementById('btn-back').innerText = t.btn_back;
+            document.getElementById('msg-disabled').innerText = t.msg_disabled;
+        }
+
+        async function checkRegistration() {
+            try {
+                const res = await fetch('/_matrix/client/v3/register');
+                if (res.status === 401 || res.ok) {
+                    // This means API is responding (registration is allowed)
+                } else {
+                    showDisabled();
+                }
+            } catch (e) {
+                // If it fails, might be just auth required for checking, or disabled
+            }
+        }
+
+        function showDisabled() {
+            document.getElementById('reg-form').classList.add('hidden');
+            document.getElementById('reg-disabled').classList.remove('hidden');
+        }
+
+        async function register() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
+            const status = document.getElementById('status');
+            const submitBtn = document.getElementById('btn-submit');
+            const t = translations[currentLang];
+
+            if (pass !== confirm) {
+                status.className = "status-msg error";
+                status.innerText = t.err_mismatch;
+                return;
+            }
+
+            if (pass.length < 8) {
+                status.className = "status-msg error";
+                status.innerText = t.err_short;
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="loader"></span> ${t.loading}`;
+            status.innerText = "";
+
+            try {
+                const response = await fetch('/_matrix/client/v3/register?kind=user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: user,
+                        password: pass,
+                        auth: { type: 'm.login.dummy' }
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('reg-form').classList.add('hidden');
+                    document.getElementById('success-view').classList.remove('hidden');
+                } else {
+                    const data = await response.json();
+                    status.className = "status-msg error";
+                    status.innerText = data.error || t.err_generic;
+                }
+            } catch (e) {
+                status.className = "status-msg error";
+                status.innerText = t.err_generic;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = t.btn_submit;
+            }
+        }
+
+        // Initialize
+        checkRegistration();
+    </script>
+</body>
+</html>

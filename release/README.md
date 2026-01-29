@@ -8,7 +8,9 @@ Designed for easy deployment in both **Online** and **Offline (Air-gapped)** env
 ## Features
 *   **Matrix Synapse**: The reference homeserver implementation (latest version).
 *   **Synapse Admin**: A beautiful web UI to manage users and rooms.
-*   **Nginx Reverse Proxy**: Securely serving both the API and Admin UI on standard ports.
+*   **Nginx Reverse Proxy**: Securely serving API, Admin UI, and Landing Page.
+*   **SSL/HTTPS**: Built-in Certbot integration for automatic SSL setup.
+*   **Registration Portal**: Responsive, bilingual landing page at `/register`.
 *   **Dual Deployment**: Specialized packages for connected and disconnected servers.
 
 ---
@@ -62,10 +64,18 @@ Use this if your server is air-gapped (No Internet).
     3.  **On Server**: Run `sudo ./install_server.sh`. It will load the images from the files.
 
 ## ⚙️ Configuration
-The server runs on port `80` by default.
-*   **Admin Panel**: `http://<your-server-ip>/admin`
-*   **Matrix Home**: `http://<your-server-ip>/_matrix`
+The server runs on standard ports (`80` and `443` if SSL is enabled).
+*   **Landing Page**: `http://<domain>/register` (User registration & App links)
+*   **Admin Panel**: `http://<domain>/admin` (Server management)
+*   **Matrix Home**: `http://<domain>/` (Proxies to Synapse API)
 *   **Config File**: `data/homeserver.yaml`
+
+## 🛠️ Management
+Use the `manage.sh` script to perform common tasks:
+1.  **Create User**: Manually register new Matrix users.
+2.  **Toggle Registration**: Enable/Disable public registration (updates the `/register` page automatically).
+3.  **View Logs**: Real-time Synapse log monitoring.
+4.  **Restart**: Quick service restart.
 
 ---
 

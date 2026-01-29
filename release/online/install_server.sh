@@ -71,6 +71,15 @@ fi
 # Ensure connection allows Nginx proxy (required for Upgrade/Migration)
 sed -i "s/bind_addresses: .*/bind_addresses: ['0.0.0.0']/" data/homeserver.yaml
 
+# Deploy Landing Page
+log "Deploying Registration Landing Page..."
+mkdir -p data/www
+if [ -f "../landing.html" ]; then
+    cp "../landing.html" "data/www/index.html"
+elif [ -f "landing.html" ]; then
+    cp "landing.html" "data/www/index.html"
+fi
+
 # --- SSL Setup (Certbot Standalone) ---
 echo ""
 read -p "Do you want to enable HTTPS via Certbot? (y/N): " ENABLE_SSL
@@ -107,16 +116,22 @@ server {
     ssl_certificate $SSL_CERT;
     ssl_certificate_key $SSL_KEY;
 
-    location /admin {
-        alias /var/www/synapse-admin;
-        index index.html;
-    }
-
     location / {
         proxy_pass http://synapse:8008;
         proxy_set_header X-Forwarded-For \$remote_addr;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Host \$host;
+    }
+
+    location /register {
+        alias /var/www/html;
+        index index.html;
+        try_files \$uri \$uri/ =404;
+    }
+
+    location /admin {
+        alias /var/www/synapse-admin;
+        index index.html;
     }
 
     location /.well-known/matrix/client {
@@ -131,15 +146,7 @@ server {
         add_header Access-Control-Allow-Origin *;
     }
 
-    location /_matrix {
-        proxy_pass http://synapse:8008;
-        proxy_set_header X-Forwarded-For \$remote_addr;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Host \$host;
-        client_max_body_size 50M;
-    }
-    
-    location /_synapse {
+    location ~ ^/(_matrix|_synapse) {
         proxy_pass http://synapse:8008;
         proxy_set_header X-Forwarded-For \$remote_addr;
         proxy_set_header X-Forwarded-Proto \$scheme;
@@ -156,16 +163,22 @@ server {
     listen 80;
     server_name $SERVER_NAME;
 
-    location /admin {
-        alias /var/www/synapse-admin;
-        index index.html;
-    }
-
     location / {
         proxy_pass http://synapse:8008;
         proxy_set_header X-Forwarded-For \$remote_addr;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Host \$host;
+    }
+
+    location /register {
+        alias /var/www/html;
+        index index.html;
+        try_files \$uri \$uri/ =404;
+    }
+
+    location /admin {
+        alias /var/www/synapse-admin;
+        index index.html;
     }
 
     location /.well-known/matrix/client {
@@ -174,15 +187,7 @@ server {
         add_header Access-Control-Allow-Origin *;
     }
 
-    location /_matrix {
-        proxy_pass http://synapse:8008;
-        proxy_set_header X-Forwarded-For \$remote_addr;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Host \$host;
-        client_max_body_size 50M;
-    }
-    
-    location /_synapse {
+    location ~ ^/(_matrix|_synapse) {
         proxy_pass http://synapse:8008;
         proxy_set_header X-Forwarded-For \$remote_addr;
         proxy_set_header X-Forwarded-Proto \$scheme;

@@ -34,6 +34,7 @@ ElementX/
     │   └── prepare_assets.sh
     │
     ├── legacy/                  ← Old scripts (archived)
+    ├── landing.html             ← Bilingual Registration Landing Page
     └── synapse/                 ← [OPTIONAL] Synapse source code
 ```
 
@@ -251,7 +252,9 @@ This installation uses **8 Iranian Ubuntu mirrors** for fast, reliable downloads
 - ✅ **Iranian Mirrors** - Fast downloads
 - ✅ **Offline Support** - Air-gapped deployment
 - ✅ **Auto-configuration** - Interactive wizard
-- ✅ **HTTPS Support** - Optional Caddy integration
+- ✅ **HTTPS/SSL** - Automatic setup via Certbot (Standalone)
+- ✅ **Landing Page** - Bilingual (EN/FA) registration & app links
+- ✅ **Registration Toggle** - Easy management via `manage.sh`
 
 ---
 

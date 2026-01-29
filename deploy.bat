@@ -90,6 +90,22 @@ if /I "%CLONE_CHOICE%"=="y" (
     echo [SKIP] Skipping Synapse source code clone
 )
 
+REM Copy landing page
+if exist "landing.html" (
+    copy /Y landing.html release\ >nul
+    echo [OK] landing.html copied to release folder
+)
+
+REM Update subdirectories
+echo [INFO] Updating online/offline subdirectories...
+if not exist "release\online" mkdir release\online
+if not exist "release\offline" mkdir release\offline
+
+copy /Y release\install_server.sh release\online\ >nul
+copy /Y release\docker-compose.yml release\online\ >nul
+copy /Y release\install_server.sh release\offline\ >nul
+copy /Y release\docker-compose.yml release\offline\ >nul
+
 echo.
 echo ========================================
 echo   Bundle Preparation Complete!
@@ -98,11 +114,12 @@ echo.
 echo The 'release' folder is ready to transfer to your Linux server.
 echo.
 echo Contents:
-dir /B release
+echo - release/online/  (For servers with internet)
+echo - release/offline/ (For air-gapped servers)
+echo - release/landing.html (Registration Landing Page)
 echo.
 echo Next steps:
 echo 1. Copy the 'release' folder to your Linux server
-echo 2. On the server, run: chmod +x *.sh ^&^& sudo ./install_server.sh
-echo 3. After installation, run: sudo ./configure.sh (for easy setup)
+echo 2. On the server, run: sudo bash install_server.sh
 echo.
 pause
