@@ -71,16 +71,64 @@ fi
 # Ensure connection allows Nginx proxy (required for Upgrade/Migration)
 sed -i "s/bind_addresses: .*/bind_addresses: ['0.0.0.0']/" data/homeserver.yaml
 
-# Configure Nginx
-mkdir -p data/nginx/conf.d
-cat > data/nginx/conf.d/matrix.conf <<EOF
+# --- SSL Setup (Certbot Standalone) ---
+echo ""
+read -p "Do you want to enable HTTPS via Certbot? (y/N): " ENABLE_SSL
+if [[ "$ENABLE_SSL" =~ ^[Yy]$ ]]; then
+    log "Setting up HTTPS via Certbot..."
+    
+    # Install certbot if not exists
+    if ! command -v certbot &> /dev/null; then
+        log "Installing certbot..."
+        apt-get update && apt-get install -y certbot
+    fi
+
+    # Acquire certificate
+    log "Acquiring certificate for $SERVER_NAME..."
+    certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$SERVER_NAME"
+    
+    # SSL Paths
+    SSL_CERT="/etc/letsencrypt/live/$SERVER_NAME/fullchain.pem"
+    SSL_KEY="/etc/letsencrypt/live/$SERVER_NAME/privkey.pem"
+
+    # Configure Nginx with SSL
+    mkdir -p data/nginx/conf.d
+    cat > data/nginx/conf.d/matrix.conf <<EOF
 server {
     listen 80;
     server_name $SERVER_NAME;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name $SERVER_NAME;
+
+    ssl_certificate $SSL_CERT;
+    ssl_certificate_key $SSL_KEY;
 
     location /admin {
         alias /var/www/synapse-admin;
         index index.html;
+    }
+
+    location / {
+        proxy_pass http://synapse:8008;
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+    }
+
+    location /.well-known/matrix/client {
+        return 200 '{"m.homeserver": {"base_url": "https://$SERVER_NAME"}}';
+        add_header Content-Type application/json;
+        add_header Access-Control-Allow-Origin *;
+    }
+
+    location /.well-known/matrix/server {
+        return 200 '{"m.server": "$SERVER_NAME:443"}';
+        add_header Content-Type application/json;
+        add_header Access-Control-Allow-Origin *;
     }
 
     location /_matrix {
@@ -100,6 +148,50 @@ server {
     }
 }
 EOF
+else
+    # Configure Nginx without SSL
+    mkdir -p data/nginx/conf.d
+    cat > data/nginx/conf.d/matrix.conf <<EOF
+server {
+    listen 80;
+    server_name $SERVER_NAME;
+
+    location /admin {
+        alias /var/www/synapse-admin;
+        index index.html;
+    }
+
+    location / {
+        proxy_pass http://synapse:8008;
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+    }
+
+    location /.well-known/matrix/client {
+        return 200 '{"m.homeserver": {"base_url": "http://$SERVER_NAME"}}';
+        add_header Content-Type application/json;
+        add_header Access-Control-Allow-Origin *;
+    }
+
+    location /_matrix {
+        proxy_pass http://synapse:8008;
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        client_max_body_size 50M;
+    }
+    
+    location /_synapse {
+        proxy_pass http://synapse:8008;
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        client_max_body_size 50M;
+    }
+}
+EOF
+fi
 
 # --- Step 4: Start ---
 echo ""

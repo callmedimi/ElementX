@@ -22,5 +22,6 @@ services:
     volumes:
       - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./data/synapse-admin:/var/www/synapse-admin:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - synapse

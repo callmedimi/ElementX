@@ -101,6 +101,13 @@ server {
         index index.html;
     }
 
+    location / {
+        proxy_pass http://synapse:8008;
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+    }
+
     location /_matrix {
         proxy_pass http://synapse:8008;
         proxy_set_header X-Forwarded-For \$remote_addr;
