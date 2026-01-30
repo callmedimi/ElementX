@@ -63,9 +63,19 @@ if [ ! -f "data/homeserver.yaml" ]; then
     log "Generating Synapse config..."
     $DOCKER_COMPOSE run --rm -e SYNAPSE_SERVER_NAME="$SERVER_NAME" -e SYNAPSE_REPORT_STATS=no synapse generate
     
-    # Patch Config
-    sed -i "s/^server_name:.*/server_name: \"$SERVER_NAME\"/" data/homeserver.yaml
-    sed -i "s/^enable_registration:.*/enable_registration: true/" data/homeserver.yaml
+    # Patch Config: Aggressive approach (remove old, append new)
+    sed -i "/^#\?\s*server_name:/d" data/homeserver.yaml
+    echo "server_name: \"$SERVER_NAME\"" >> data/homeserver.yaml
+    
+    # Force enable registration at the end to be certain
+    sed -i "/^#\?\s*enable_registration:/d" data/homeserver.yaml
+    echo "enable_registration: true" >> data/homeserver.yaml
+    
+    # Ensure registration_shared_secret is set (required for some flows)
+    if ! grep -q "registration_shared_secret:" data/homeserver.yaml; then
+        SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+        echo "registration_shared_secret: \"$SECRET\"" >> data/homeserver.yaml
+    fi
 fi
 
 # Ensure connection allows Nginx proxy (required for Upgrade/Migration)

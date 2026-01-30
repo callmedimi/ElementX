@@ -71,11 +71,13 @@ The server runs on standard ports (`80` and `443` if SSL is enabled).
 *   **Config File**: `data/homeserver.yaml`
 
 ## 🛠️ Management
-Use the `manage.sh` script to perform common tasks:
-1.  **Create User**: Manually register new Matrix users.
-2.  **Toggle Registration**: Enable/Disable public registration (updates the `/register` page automatically).
-3.  **View Logs**: Real-time Synapse log monitoring.
-4.  **Restart**: Quick service restart.
+74: Use the `manage.sh` script to perform common tasks:
+75: 1.  **Create User**: Manually register new Matrix users.
+76: 2.  **View Logs**: Real-time Synapse log monitoring.
+77: 3.  **Restart**: Quick service restart.
+78: 4.  **Check Status**: Verify container health.
+79: 5.  **Toggle Registration**: One-click enable/disable for public registration (v3.3 Smart Toggle).
+80: 6.  **Quick Fix**: Automatically repair configuration permissions and boot loops.
 
 ---
 

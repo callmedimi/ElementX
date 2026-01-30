@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Element X Server</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Vazirmatn:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #0dbd8b;
@@ -14,6 +16,7 @@
             --text: #f3f4f6;
             --text-dim: #9ca3af;
             --error: #ef4444;
+            --warn: #f59e0b;
         }
 
         [lang="fa"] {
@@ -24,7 +27,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(13, 189, 139, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
             color: var(--text);
@@ -106,8 +109,8 @@
         input {
             width: 100%;
             padding: 12px 16px;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: #fff;
             box-sizing: border-box;
@@ -147,7 +150,7 @@
         .apps {
             margin-top: 40px;
             padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .apps h3 {
@@ -170,7 +173,7 @@
             justify-content: center;
             gap: 8px;
             padding: 10px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             text-decoration: none;
             color: var(--text);
@@ -179,7 +182,7 @@
         }
 
         .app-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .status-msg {
@@ -188,10 +191,17 @@
             min-height: 1.2em;
         }
 
-        .error { color: var(--error); }
-        .success { color: var(--primary); }
+        .error {
+            color: var(--error);
+        }
 
-        .hidden { display: none; }
+        .success {
+            color: var(--primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
 
         /* Loader */
         .loader {
@@ -205,11 +215,17 @@
         }
 
         @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body id="body">
     <div class="lang-switch">
         <button class="ghost" onclick="toggleLang()" id="btn-lang">فارسی</button>
@@ -219,7 +235,13 @@
         <h1 id="title">Join Element X</h1>
         <p class="subtitle" id="subtitle">Create your instance account</p>
 
-        <div id="reg-form">
+        <div id="reg-checking">
+            <div class="loader"
+                style="border-color: var(--primary); border-bottom-color: transparent; margin-bottom: 10px;"></div>
+            <p id="msg-checking" style="color: var(--text-dim);">Checking registration status...</p>
+        </div>
+
+        <div id="reg-form" class="hidden">
             <div class="input-group">
                 <label id="lbl-user">Username</label>
                 <input type="text" id="username" placeholder="e.g. ali">
@@ -232,13 +254,22 @@
                 <label id="lbl-confirm">Confirm Password</label>
                 <input type="password" id="confirm" placeholder="••••••••">
             </div>
-
             <button class="submit-btn" onclick="register()" id="btn-submit">Register</button>
             <div id="status" class="status-msg"></div>
         </div>
 
         <div id="reg-disabled" class="hidden">
-            <p style="color: var(--error);" id="msg-disabled">Public registration is currently disabled.</p>
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
+            <p style="color: var(--error); font-weight: bold;" id="msg-disabled">Public registration is currently
+                disabled.</p>
+            <button class="ghost" onclick="window.location.reload()" style="margin-top: 20px;">Refresh Status</button>
+        </div>
+
+        <div id="reg-error" class="hidden">
+            <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+            <p style="color: var(--warn); font-weight: bold;" id="msg-error">Server Unavailable</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">The server is restarting or offline (502).</p>
+            <button class="ghost" onclick="window.location.reload()" style="margin-top: 20px;">Retry Connection</button>
         </div>
 
         <div id="success-view" class="hidden">
@@ -251,20 +282,15 @@
         <div class="apps">
             <h3 id="app-title">Download App</h3>
             <div class="app-links">
-                <a href="https://play.google.com/store/apps/details?id=io.element.android.x" class="app-link" target="_blank">
-                    <span>Android (X)</span>
-                </a>
-                <a href="https://apps.apple.com/app/element-x/id6447817174" class="app-link" target="_blank">
-                    <span>iOS (X)</span>
-                </a>
-                <a href="https://element.io/download" class="app-link" target="_blank">
-                    <span>Desktop</span>
-                </a>
-                <a href="https://app.element.io" class="app-link" target="_blank">
-                    <span>Web App</span>
-                </a>
+                <a href="https://play.google.com/store/apps/details?id=io.element.android.x" class="app-link"
+                    target="_blank"><span>Android (X)</span></a>
+                <a href="https://apps.apple.com/app/element-x/id6447817174" class="app-link" target="_blank"><span>iOS
+                        (X)</span></a>
+                <a href="https://element.io/download" class="app-link" target="_blank"><span>Desktop</span></a>
+                <a href="https://app.element.io" class="app-link" target="_blank"><span>Web App</span></a>
             </div>
         </div>
+        <footer style="margin-top:20px; font-size:10px; opacity:0.3;">v3.3 Smart Check</footer>
     </div>
 
     <script>
@@ -282,8 +308,10 @@
                 success_msg: "You can now sign in to Element with your credentials.",
                 btn_back: "Create Another",
                 msg_disabled: "Public registration is currently disabled.",
+                msg_error: "Server Temporarily Unavailable",
+                msg_checking: "Checking registration status...",
                 err_mismatch: "Passwords do not match",
-                err_generic: "Registration failed. Check if username is taken.",
+                err_generic: "Registration failed.",
                 err_short: "Password must be at least 8 characters",
                 loading: "Registering..."
             },
@@ -299,9 +327,11 @@
                 success_title: "حساب ساخته شد!",
                 success_msg: "اکنون می‌توانید با حساب خود وارد اپلیکیشن شوید.",
                 btn_back: "ساخت حساب دیگر",
-                msg_disabled: "ثبت‌نام عمومی در حال حاضر غیرفعال است.",
+                msg_disabled: "ثبت‌نام عمومی غیرفعال است.",
+                msg_error: "سرور در دسترس نیست",
+                msg_checking: "درحال بررسی وضعیت...",
                 err_mismatch: "رمزهای عبور همخوانی ندارند",
-                err_generic: "خطا در ثبت‌نام. نام کاربری احتمالا تکراری است.",
+                err_generic: "خطا در ثبت‌نام.",
                 err_short: "رمز عبور باید حداقل ۸ کاراکتر باشد",
                 loading: "در حال ثبت‌نام..."
             }
@@ -313,36 +343,90 @@
             currentLang = currentLang === 'en' ? 'fa' : 'en';
             const t = translations[currentLang];
             document.getElementById('body').lang = currentLang;
-            document.getElementById('title').innerText = t.title;
-            document.getElementById('subtitle').innerText = t.subtitle;
-            document.getElementById('lbl-user').innerText = t.lbl_user;
-            document.getElementById('lbl-pass').innerText = t.lbl_pass;
-            document.getElementById('lbl-confirm').innerText = t.lbl_confirm;
-            document.getElementById('btn-submit').innerText = t.btn_submit;
-            document.getElementById('btn-lang').innerText = t.btn_lang;
-            document.getElementById('app-title').innerText = t.app_title;
-            document.getElementById('success-title').innerText = t.success_title;
-            document.getElementById('success-msg').innerText = t.success_msg;
-            document.getElementById('btn-back').innerText = t.btn_back;
-            document.getElementById('msg-disabled').innerText = t.msg_disabled;
+            ['title', 'subtitle', 'lbl-user', 'lbl-pass', 'lbl-confirm', 'btn-submit', 'btn-lang', 'app-title', 'success-title', 'success-msg', 'btn-back', 'msg-disabled', 'msg-checking', 'msg-error'].forEach(id => {
+                if (document.getElementById(id)) document.getElementById(id).innerText = t[id];
+            });
         }
 
         async function checkRegistration() {
+            const cacheBust = Date.now();
+            console.log("Check V3.3 Smart Starting...");
             try {
-                const res = await fetch('/_matrix/client/v3/register');
-                if (res.status === 401 || res.ok) {
-                    // This means API is responding (registration is allowed)
-                } else {
-                    showDisabled();
+                // Step 1: GET Check
+                let res = await fetch(`/_matrix/client/v3/register?c=${cacheBust}`);
+                console.log("GET Status:", res.status);
+
+                if (res.status === 405) {
+                    res = await fetch(`/_matrix/client/v3/register?c=${cacheBust}`, { method: 'POST' });
+                    console.log("GET fallback Status:", res.status);
                 }
+
+                document.getElementById('reg-checking').classList.add('hidden');
+
+                if (res.status >= 500) {
+                    showError(); return;
+                }
+                if (res.status === 403) {
+                    showDisabled(); return;
+                }
+                if (res.status === 400) {
+                    showDisabled(); return;
+                }
+
+                // Step 2: Smart POST Check
+                // Even if GET is 200/401, we want to confirm POST is allowed.
+                if (res.status === 200 || res.status === 401) {
+                    console.log("GET OK. Probing POST...");
+                    try {
+                        const probe = await fetch('/_matrix/client/v3/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({}) // Empty body
+                        });
+                        console.log("POST Probe Status:", probe.status);
+
+                        // If POST is Forbidden (403), then it's definitely disabled.
+                        if (probe.status === 403) {
+                            showDisabled();
+                            return;
+                        }
+
+                        // If POST is 400/401/200, it means the endpoint is LISTENING and processing data.
+                        // (400 means "Bad Request: Missing data", which confirms endpoint is active).
+                        showForm();
+                    } catch (err) {
+                        console.error("Probe failed:", err);
+                        // If probe fails net error, fallback to safe error
+                        showError();
+                    }
+                    return;
+                }
+
+                showDisabled();
+
             } catch (e) {
-                // If it fails, might be just auth required for checking, or disabled
+                console.error("Network Error:", e);
+                document.getElementById('reg-checking').classList.add('hidden');
+                showError();
             }
         }
 
+        function showForm() {
+            hideAll();
+            document.getElementById('reg-form').classList.remove('hidden');
+        }
         function showDisabled() {
-            document.getElementById('reg-form').classList.add('hidden');
+            hideAll();
             document.getElementById('reg-disabled').classList.remove('hidden');
+        }
+        function showError() {
+            hideAll();
+            document.getElementById('reg-error').classList.remove('hidden');
+        }
+        function hideAll() {
+            ['reg-form', 'reg-disabled', 'reg-error', 'success-view', 'reg-checking'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
         }
 
         async function register() {
@@ -358,7 +442,6 @@
                 status.innerText = t.err_mismatch;
                 return;
             }
-
             if (pass.length < 8) {
                 status.className = "status-msg error";
                 status.innerText = t.err_short;
@@ -370,7 +453,7 @@
             status.innerText = "";
 
             try {
-                const response = await fetch('/_matrix/client/v3/register?kind=user', {
+                const response = await fetch('/_matrix/client/v3/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -381,12 +464,12 @@
                 });
 
                 if (response.ok) {
-                    document.getElementById('reg-form').classList.add('hidden');
+                    hideAll();
                     document.getElementById('success-view').classList.remove('hidden');
                 } else {
                     const data = await response.json();
                     status.className = "status-msg error";
-                    status.innerText = data.error || t.err_generic;
+                    status.innerText = data.error || (data.errcode === 'M_USER_IN_USE' ? "Username taken" : t.err_generic);
                 }
             } catch (e) {
                 status.className = "status-msg error";
@@ -397,8 +480,8 @@
             }
         }
 
-        // Initialize
         checkRegistration();
     </script>
 </body>
+
 </html>
