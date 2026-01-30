@@ -248,11 +248,11 @@
             </div>
             <div class="input-group">
                 <label id="lbl-pass">Password</label>
-                <input type="password" id="password" placeholder="••••••••">
+                <input type="password" id="password" placeholder="At least 8 characters">
             </div>
             <div class="input-group">
                 <label id="lbl-confirm">Confirm Password</label>
-                <input type="password" id="confirm" placeholder="••••••••">
+                <input type="password" id="confirm" placeholder="Enter password again">
             </div>
             <button class="submit-btn" onclick="register()" id="btn-submit">Register</button>
             <div id="status" class="status-msg"></div>
@@ -262,21 +262,26 @@
             <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
             <p style="color: var(--error); font-weight: bold;" id="msg-disabled">Public registration is currently
                 disabled.</p>
-            <button class="ghost" onclick="window.location.reload()" style="margin-top: 20px;">Refresh Status</button>
+            <p id="debug-info"
+                style="font-family:monospace; font-size:0.8rem; color:var(--text-dim); margin-top:5px; opacity:0.5;">
+            </p>
+            <button class="ghost" onclick="window.location.reload()" id="btn-refresh">Refresh Status</button>
         </div>
 
         <div id="reg-error" class="hidden">
             <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
             <p style="color: var(--warn); font-weight: bold;" id="msg-error">Server Unavailable</p>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">The server is restarting or offline (502).</p>
-            <button class="ghost" onclick="window.location.reload()" style="margin-top: 20px;">Retry Connection</button>
+            <p id="msg-error-sub" style="color: var(--text-dim); font-size: 0.9rem;">The server is restarting or offline
+                (502).</p>
+            <button class="ghost" onclick="window.location.reload()" id="btn-retry" style="margin-top: 20px;">Retry
+                Connection</button>
         </div>
 
         <div id="success-view" class="hidden">
             <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
             <h2 id="success-title">Account Created!</h2>
             <p id="success-msg">You can now sign in to Element with your credentials.</p>
-            <button class="submit-btn" onclick="window.location.reload()" id="btn-back">Create Another</button>
+            <button class="submit-btn" onclick="window.location.reload()" id="btn-back">Create Another account</button>
         </div>
 
         <div class="apps">
@@ -290,7 +295,9 @@
                 <a href="https://app.element.io" class="app-link" target="_blank"><span>Web App</span></a>
             </div>
         </div>
-        <footer style="margin-top:20px; font-size:10px; opacity:0.3;">v3.3 Smart Check</footer>
+        <footer style="margin-top:30px; font-size:12px; opacity:0.6; color: var(--text-dim);">
+            v3.6 - made with ❤️ by dimi
+        </footer>
     </div>
 
     <script>
@@ -306,34 +313,46 @@
                 app_title: "Download App",
                 success_title: "Account Created!",
                 success_msg: "You can now sign in to Element with your credentials.",
-                btn_back: "Create Another",
+                btn_back: "Create Another account",
                 msg_disabled: "Public registration is currently disabled.",
                 msg_error: "Server Temporarily Unavailable",
+                msg_error_sub: "The server is restarting or offline (502).",
                 msg_checking: "Checking registration status...",
                 err_mismatch: "Passwords do not match",
                 err_generic: "Registration failed.",
                 err_short: "Password must be at least 8 characters",
-                loading: "Registering..."
+                loading: "Registering...",
+                btn_refresh: "Refresh Status",
+                btn_retry: "Retry Connection",
+                user_ph: "e.g. ali",
+                pass_ph: "At least 8 characters",
+                conf_ph: "Enter password again"
             },
             fa: {
-                title: "عضویت در المنت",
-                subtitle: "ساخت حساب کاربری جدید",
+                title: "عضویت در سرور المنت",
+                subtitle: "ساخت حساب کاربری اختصاصی برای شما",
                 lbl_user: "نام کاربری",
                 lbl_pass: "رمز عبور",
                 lbl_confirm: "تایید رمز عبور",
-                btn_submit: "ثبت‌نام",
+                btn_submit: "ایجاد حساب کاربری",
                 btn_lang: "English",
-                app_title: "دریافت اپلیکیشن",
-                success_title: "حساب ساخته شد!",
-                success_msg: "اکنون می‌توانید با حساب خود وارد اپلیکیشن شوید.",
-                btn_back: "ساخت حساب دیگر",
-                msg_disabled: "ثبت‌نام عمومی غیرفعال است.",
-                msg_error: "سرور در دسترس نیست",
-                msg_checking: "درحال بررسی وضعیت...",
-                err_mismatch: "رمزهای عبور همخوانی ندارند",
-                err_generic: "خطا در ثبت‌نام.",
+                app_title: "دریافت اپلیکیشن المنت اکس",
+                success_title: "تبریک! حساب شما ساخته شد",
+                success_msg: "اکنون می‌توانید با اطلاعات خود وارد اپلیکیشن شوید.",
+                btn_back: "ساخت یک حساب دیگر",
+                msg_disabled: "ثبت‌نام عمومی در حال حاضر غیرفعال است.",
+                msg_error: "سرور موقتاً در دسترس نیست",
+                msg_error_sub: "سرور در حال راه‌اندازی مجدد یا آفلاین است (خطای ۵۰۲).",
+                msg_checking: "در حال بررسی وضعیت ثبت‌نام...",
+                err_mismatch: "رمزهای عبور وارد شده یکسان نیستند",
+                err_generic: "خطایی در فرآیند ثبت‌نام رخ داد",
                 err_short: "رمز عبور باید حداقل ۸ کاراکتر باشد",
-                loading: "در حال ثبت‌نام..."
+                loading: "در حال پردازش...",
+                btn_refresh: "بروزرسانی وضعیت",
+                btn_retry: "تلاش مجدد",
+                user_ph: "مثلاً ali",
+                pass_ph: "حداقل ۸ کاراکتر",
+                conf_ph: "رمز عبور را دوباره وارد کنید"
             }
         };
 
@@ -343,62 +362,53 @@
             currentLang = currentLang === 'en' ? 'fa' : 'en';
             const t = translations[currentLang];
             document.getElementById('body').lang = currentLang;
-            ['title', 'subtitle', 'lbl-user', 'lbl-pass', 'lbl-confirm', 'btn-submit', 'btn-lang', 'app-title', 'success-title', 'success-msg', 'btn-back', 'msg-disabled', 'msg-checking', 'msg-error'].forEach(id => {
-                if (document.getElementById(id)) document.getElementById(id).innerText = t[id];
+
+            // Text Content
+            const ids = ['title', 'subtitle', 'lbl-user', 'lbl-pass', 'lbl-confirm', 'btn-submit', 'btn-lang', 'app-title', 'success-title', 'success-msg', 'btn-back', 'msg-disabled', 'msg-checking', 'msg-error', 'msg-error-sub', 'btn-refresh', 'btn-retry'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const key = id.replace(/-/g, '_');
+                    el.innerText = t[key] || el.innerText;
+                }
             });
+
+            // Placeholders
+            const userIn = document.getElementById('username');
+            const passIn = document.getElementById('password');
+            const confIn = document.getElementById('confirm');
+            if (userIn) userIn.placeholder = t.user_ph;
+            if (passIn) passIn.placeholder = t.pass_ph;
+            if (confIn) confIn.placeholder = t.conf_ph;
         }
 
         async function checkRegistration() {
             const cacheBust = Date.now();
-            console.log("Check V3.3 Smart Starting...");
-            try {
-                // Step 1: GET Check
-                let res = await fetch(`/_matrix/client/v3/register?c=${cacheBust}`);
-                console.log("GET Status:", res.status);
+            console.log("Check V3.6 Starting...");
 
-                if (res.status === 405) {
-                    res = await fetch(`/_matrix/client/v3/register?c=${cacheBust}`, { method: 'POST' });
-                    console.log("GET fallback Status:", res.status);
-                }
+            try {
+                const probeUser = "probe_" + cacheBust;
+                const url = `/_matrix/client/v3/register/available?username=${probeUser}`;
+
+                let res = await fetch(url);
+                console.log("Availability Status:", res.status);
 
                 document.getElementById('reg-checking').classList.add('hidden');
+                document.getElementById('debug-info').innerText = "Status: " + res.status;
 
                 if (res.status >= 500) {
                     showError(); return;
                 }
+
                 if (res.status === 403) {
-                    showDisabled(); return;
+                    console.log("Disabled (403)");
+                    showDisabled();
+                    return;
                 }
-                if (res.status === 400) {
-                    showDisabled(); return;
-                }
 
-                // Step 2: Smart POST Check
-                // Even if GET is 200/401, we want to confirm POST is allowed.
-                if (res.status === 200 || res.status === 401) {
-                    console.log("GET OK. Probing POST...");
-                    try {
-                        const probe = await fetch('/_matrix/client/v3/register', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({}) // Empty body
-                        });
-                        console.log("POST Probe Status:", probe.status);
-
-                        // If POST is Forbidden (403), then it's definitely disabled.
-                        if (probe.status === 403) {
-                            showDisabled();
-                            return;
-                        }
-
-                        // If POST is 400/401/200, it means the endpoint is LISTENING and processing data.
-                        // (400 means "Bad Request: Missing data", which confirms endpoint is active).
-                        showForm();
-                    } catch (err) {
-                        console.error("Probe failed:", err);
-                        // If probe fails net error, fallback to safe error
-                        showError();
-                    }
+                if (res.status === 200 || res.status === 400 || res.status === 409 || res.status === 429 || res.status === 405 || res.status === 401) {
+                    console.log("Enabled. Status:", res.status);
+                    showForm();
                     return;
                 }
 
@@ -430,12 +440,16 @@
         }
 
         async function register() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const confirm = document.getElementById('confirm').value;
+            const userInput = document.getElementById('username');
+            const passInput = document.getElementById('password');
+            const confInput = document.getElementById('confirm');
             const status = document.getElementById('status');
             const submitBtn = document.getElementById('btn-submit');
             const t = translations[currentLang];
+
+            const user = userInput.value;
+            const pass = passInput.value;
+            const confirm = confInput.value;
 
             if (pass !== confirm) {
                 status.className = "status-msg error";
@@ -469,7 +483,7 @@
                 } else {
                     const data = await response.json();
                     status.className = "status-msg error";
-                    status.innerText = data.error || (data.errcode === 'M_USER_IN_USE' ? "Username taken" : t.err_generic);
+                    status.innerText = data.error || (data.errcode === 'M_USER_IN_USE' ? (currentLang === 'fa' ? "این نام کاربری قبلاً گرفته شده است" : "Username taken") : t.err_generic);
                 }
             } catch (e) {
                 status.className = "status-msg error";

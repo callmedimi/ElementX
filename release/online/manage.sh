@@ -37,11 +37,25 @@ fix_permissions() {
     fi
 }
 
+# Function to update landing page
+update_landing_page() {
+    log "Checking for landing page updates..."
+    # Check parent directory (release/landing.html)
+    if [ -f "../landing.html" ]; then
+        cp "../landing.html" "data/www/index.html"
+        log "Updated landing page from release/landing.html"
+    elif [ -f "landing.html" ]; then
+        cp "landing.html" "data/www/index.html"
+        log "Updated landing page from online/landing.html"
+    fi
+    chmod 644 data/www/index.html 2>/dev/null || true
+}
+
 # --- Menu ---
 while true; do
     echo ""
     echo "=========================================="
-    echo "  Element X Server Management (v3.3)"
+    echo "  Element X Server Management (v3.5)"
     echo "=========================================="
     echo "1. Create New User"
     echo "2. View Synapse Logs"
@@ -71,6 +85,7 @@ while true; do
         3)
             echo ""
             log "Restarting Synapse..."
+            update_landing_page
             fix_permissions
             $DOCKER_COMPOSE restart synapse
             log "Restart complete."
@@ -85,13 +100,16 @@ while true; do
                 err "Config file not found in $(pwd)/data/homeserver.yaml"
             fi
             
+            # Update landing page first
+            update_landing_page
+
             # Simple, robust detection
             IS_ENABLED=false
             if grep -Fq "enable_registration: true" data/homeserver.yaml; then
                IS_ENABLED=true
             fi
             
-            # Clean up old settings (Both new and old styles)
+            # Clean up old settings
             sed -i "/enable_registration:/d" data/homeserver.yaml
             sed -i "/enable_registration_without_verification:/d" data/homeserver.yaml
             
@@ -120,6 +138,8 @@ while true; do
         6)
             echo ""
             log "Attempting to fix configuration & permissions..."
+            update_landing_page
+            
             if [ ! -f "data/homeserver.yaml" ]; then
                 err "Config file not found!"
             fi
