@@ -65,7 +65,7 @@ if [ ! -f "data/homeserver.yaml" ]; then
     
     # Patch Config
     sed -i "s/^server_name:.*/server_name: \"$SERVER_NAME\"/" data/homeserver.yaml
-    sed -i "s/^enable_registration:.*/enable_registration: false/" data/homeserver.yaml
+    sed -i "s/^enable_registration:.*/enable_registration: true/" data/homeserver.yaml
 fi
 
 # Ensure connection allows Nginx proxy (required for Upgrade/Migration)
@@ -74,10 +74,36 @@ sed -i "s/bind_addresses: .*/bind_addresses: ['0.0.0.0']/" data/homeserver.yaml
 # Deploy Landing Page
 log "Deploying Registration Landing Page..."
 mkdir -p data/www
-if [ -f "../landing.html" ]; then
-    cp "../landing.html" "data/www/index.html"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Try multiple possible locations for landing.html
+LANDING_COPIED=false
+if [ -f "$SCRIPT_DIR/../landing.html" ]; then
+    cp "$SCRIPT_DIR/../landing.html" "data/www/index.html"
+    LANDING_COPIED=true
+    log "Copied landing.html from $SCRIPT_DIR/../landing.html"
+elif [ -f "$SCRIPT_DIR/landing.html" ]; then
+    cp "$SCRIPT_DIR/landing.html" "data/www/index.html"
+    LANDING_COPIED=true
+    log "Copied landing.html from $SCRIPT_DIR/landing.html"
 elif [ -f "landing.html" ]; then
     cp "landing.html" "data/www/index.html"
+    LANDING_COPIED=true
+    log "Copied landing.html from current directory"
+elif [ -f "../landing.html" ]; then
+    cp "../landing.html" "data/www/index.html"
+    LANDING_COPIED=true
+    log "Copied landing.html from ../landing.html"
+fi
+
+if [ "$LANDING_COPIED" = true ]; then
+    # Set proper permissions for Nginx
+    chmod -R 755 data/www
+    chmod 644 data/www/index.html
+    log "Set permissions for registration page"
+else
+    warn "landing.html not found - registration page will not be available"
+    warn "Please manually copy landing.html to data/www/index.html"
 fi
 
 # --- SSL Setup (Certbot Standalone) ---
@@ -123,10 +149,13 @@ server {
         proxy_set_header Host \$host;
     }
 
-    location /register {
-        alias /var/www/html;
+    location = /register {
+        return 301 \$scheme://\$host/register/;
+    }
+
+    location /register/ {
+        alias /var/www/html/;
         index index.html;
-        try_files \$uri \$uri/ =404;
     }
 
     location /admin {
@@ -170,10 +199,13 @@ server {
         proxy_set_header Host \$host;
     }
 
-    location /register {
-        alias /var/www/html;
+    location = /register {
+        return 301 \$scheme://\$host/register/;
+    }
+
+    location /register/ {
+        alias /var/www/html/;
         index index.html;
-        try_files \$uri \$uri/ =404;
     }
 
     location /admin {
