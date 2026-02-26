@@ -20,13 +20,13 @@ Designed for easy deployment in both **Online** and **Offline (Air-gapped)** env
 ### 🌐 Online Installation
 ```bash
 # Download and install (requires internet on server)
-cd /tmp && curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/online && sudo ./install_server.sh
+cd /tmp && curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/online && sudo ./install_server.sh
 ```
 
 ### 🔌 Offline Installation
 ```bash
 # Step 1: On PC with internet (Windows)
-curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz -o ElementX.tar.gz
+curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz -o ElementX.tar.gz
 tar -xzf ElementX.tar.gz
 cd ElementX-main/release/offline
 prepare_assets.bat
@@ -38,7 +38,7 @@ sudo ./install_server.sh
 ### 🗂️ Legacy Installation
 ```bash
 # For existing installations or custom setups
-cd /tmp && curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/legacy && sudo ./install_server.sh
+cd /tmp && curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/legacy && sudo ./install_server.sh
 ```
 
 ---
