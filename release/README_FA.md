@@ -21,13 +21,13 @@
 ### 🌐 نصب آنلاین
 ```bash
 # دانلود و نصب (نیاز به اینترنت روی سرور)
-cd /tmp && curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/online && sudo ./install_server.sh
+cd /tmp && curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/online && sudo ./install_server.sh
 ```
 
 ### 🔌 نصب آفلاین
 ```bash
 # مرحله ۱: روی کامپیوتر با اینترنت (ویندوز)
-curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz -o ElementX.tar.gz
+curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz -o ElementX.tar.gz
 tar -xzf ElementX.tar.gz
 cd ElementX-main/release/offline
 prepare_assets.bat
@@ -39,7 +39,7 @@ sudo ./install_server.sh
 ### 🗂️ نصب Legacy
 ```bash
 # برای نصب‌های موجود یا تنظیمات سفارشی
-cd /tmp && curl -fsSL https://github.com/aliqajarian/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/legacy && sudo ./install_server.sh
+cd /tmp && curl -fsSL https://github.com/callmedimi/ElementX/archive/refs/heads/main.tar.gz | tar -xz && cd ElementX-main/release/legacy && sudo ./install_server.sh
 ```
 
 ---
