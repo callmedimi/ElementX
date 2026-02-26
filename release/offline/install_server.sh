@@ -114,10 +114,13 @@ server {
         proxy_set_header Host \$host;
     }
 
-    location /register {
-        alias /var/www/html;
+    location = /register {
+        return 301 $scheme://$host/register/;
+    }
+
+    location /register/ {
+        alias /var/www/html/;
         index index.html;
-        try_files \$uri \$uri/ =404;
     }
 
     location /admin {
@@ -159,3 +162,5 @@ $DOCKER_COMPOSE exec synapse register_new_matrix_user -c /data/homeserver.yaml -
 echo ""
 log "Installation Complete!"
 log "Access: http://$SERVER_NAME/admin"
+log "Register: http://$SERVER_NAME/register"
+

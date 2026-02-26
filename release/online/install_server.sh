@@ -253,4 +253,6 @@ $DOCKER_COMPOSE exec synapse register_new_matrix_user -c /data/homeserver.yaml -
 
 echo ""
 log "Installation Complete!"
-log "Access: http://$SERVER_NAME/admin"
+log "Admin Panel:       http://$SERVER_NAME/admin"
+log "Registration Page: http://$SERVER_NAME/register"
+
